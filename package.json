@@ -5,6 +5,7 @@
   "main": "layaAir.config.js",
   "scripts": {
     "build": "cd src/publishTool&&cmd /k publish.bat",
+    "buildMac": "cd src/publishTool&&sh publish.sh",
     "compile": "gulp LayaAirBuild",
     "buildDoc": "cd src/generateDoc&&cmd /k run.bat"
   },

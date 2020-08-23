@@ -86,7 +86,8 @@ class Main {
                 mark++;
                 let tsConfigUrl = this.tsCongfig[i];
                 let cmd = ["-b", tsConfigUrl];
-                let tscurl = path.join(this.BaseURL.split("bin")[0], "./node_modules/.bin/tsc.cmd");
+                // let tscurl = path.join(this.BaseURL.split("bin")[0], "./node_modules/.bin/tsc.cmd");
+                let tscurl = path.join(this.BaseURL.split("bin")[0], "./node_modules/.bin/tsc");
                 child_process.execFile(tscurl, cmd, (err, stdout, stderr) => {
                     if (err) {
                         console.log(err, '\n', stdout, '\n', stderr);
