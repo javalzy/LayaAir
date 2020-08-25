@@ -151,6 +151,25 @@ export class Utils {
         return Utils.getGlobalRecByPoints(sprite, 0, 0, 1, 1);
     }
 
+  static getGlobalRect(sprite: Sprite): Rectangle {
+    let rect = this.getGlobalPosAndScale(sprite);
+    rect.width = Math.abs(rect.width * sprite.width);
+    rect.height = Math.abs(rect.height * sprite.height);
+    return rect;
+  }
+
+  static tempPoint: Point = new Point();
+
+  static getRefRect(sprite: Sprite, refSprite: Sprite): Rectangle {
+    const rect = this.getGlobalRect(sprite);
+    const tp = this.tempPoint;
+    tp.x = rect.x;
+    tp.y = rect.y;
+    refSprite.globalToLocal(tp);
+    rect.x = tp.x;
+    rect.y = tp.y;
+    return rect;
+  }
     /**
      * 给传入的函数绑定作用域，返回绑定后的函数。
      * @param	fun 函数对象。
@@ -403,5 +422,13 @@ export class Utils {
         if (r != null) return unescape(r[2]);
         return null;
     }
+  // 输入格式：yyyy-MM-DD
+  static daysBetween(dateStr: string): number {
+    //Date.parse() 解析一个日期时间字符串，并返回1970/1/1 午夜距离该日期时间的毫秒数
+    let time1: number = Date.parse(dateStr);
+    let time2: number = Date.parse(new Date().toString());
+    let nDays = Math.abs(Math.floor((time2 - time1) / (86400 * 1000)));
+    // console.log(`str: ${dateStr} nDays:${nDays}`);
+    return nDays;
+  }
 }
-

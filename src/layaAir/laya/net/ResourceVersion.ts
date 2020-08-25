@@ -24,10 +24,27 @@ export class ResourceVersion {
      * @param   callback		清单（json）文件加载完成后执行。
      * @param   type			FOLDER_VERSION为基于文件夹管理方式（老版本IDE默认类型），FILENAME_VERSION为基于文件名映射管理（新版本IDE默认类型
      */
-    static enable(manifestFile: string, callback: Handler, type: number = 2): void {
-        ResourceVersion.type = type;
-        ILaya.loader.load(manifestFile, Handler.create(null, ResourceVersion.onManifestLoaded, [callback]), null, Loader.JSON);
+  static enable(manifestFile: string, callback: Handler, type: number = 2, fs?: any): void {
+    ResourceVersion.type = type;
+    if (fs) {
+      fs.readFile({
+        filePath: manifestFile,
+        encoding: 'utf8',
+        success: ({ data }): void => {
+          const config = JSON.parse(data as string);
+          console.log('read version.json using fs');
+          ResourceVersion.onManifestLoaded(callback, config);
+        },
+      });
+    } else {
+      ILaya.loader.load(
+        manifestFile,
+        Handler.create(null, ResourceVersion.onManifestLoaded, [callback]),
+        null,
+        Loader.JSON,
+      );
     }
+  }
 
     private static onManifestLoaded(callback: Handler, data: any): void {
         ResourceVersion.manifest = data;

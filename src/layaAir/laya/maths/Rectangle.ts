@@ -266,5 +266,10 @@ export class Rectangle {
         if (this.width <= 0 || this.height <= 0) return true;
         return false;
     }
+    get center(): Point {
+        let x = this.x + this.width / 2;
+        let y = this.y + this.height / 2;
+        return new Point(x, y);
+    }
 }
 

@@ -1,4 +1,5 @@
 import { ILaya } from "../../ILaya";
+import { Laya } from "../../Laya";
 
 /**
 	 * <p><code>URL</code> 提供URL格式化，URL版本管理的类。</p>
@@ -55,6 +56,25 @@ export class URL {
         if (!((<any>window)).conch && newUrl) url += "?v=" + newUrl;
         return url;
     }
+    static nativeFiles: Map<string, boolean> = new Map<string, boolean>();
+  static isWeixinNativeFile(url: string): boolean {
+    const miniadapter = Laya['MiniAdpter'];
+    if (!miniadapter) return false;
+
+    if (this.nativeFiles.has(url)) {
+      return this.nativeFiles.get(url);
+    }
+
+    for (let i = 0, sz = miniadapter.nativefiles.length; i < sz; i++) {
+      if (url.indexOf(miniadapter.nativefiles[i]) != -1) {
+        this.nativeFiles.set(url, true);
+        return true;
+      }
+    }
+    this.nativeFiles.set(url, false);
+
+    return false;
+  }
 
     /**
      * 格式化指定的地址并返回。
@@ -62,27 +82,31 @@ export class URL {
      * @param	base 基础路径，如果没有，则使用basePath。
      * @return	格式化处理后的地址。
      */
-    static formatURL(url: string): string {
-        if (!url) return "null path";
-        //如果是全路径，直接返回，提高性能
-        if (url.indexOf(":") > 0) return url;
-        //自定义路径格式化
-        if (URL.customFormat != null) url = URL.customFormat(url);
-        //如果是全路径，直接返回，提高性能
-        if (url.indexOf(":") > 0) return url;
+  static formatURL(url: string): string {
+    if (!url) return 'null path';
+    //如果是全路径，直接返回，提高性能
+    if (url.indexOf(':') > 0) return url;
+    //自定义路径格式化
+    if (URL.customFormat != null) url = URL.customFormat(url);
+    //如果是全路径，直接返回，提高性能
+    if (url.indexOf(':') > 0) return url;
 
-        var char1: string = url.charAt(0);
-        if (char1 === ".") {
-            return URL._formatRelativePath(URL._basePath + url);
-        } else if (char1 === '~') {
-            return URL.rootPath + url.substring(1);
-        } else if (char1 === "d") {
-            if (url.indexOf("data:image") === 0) return url;
-        } else if (char1 === "/") {
-            return url;
-        }
-        return URL._basePath + url;
+    var char1: string = url.charAt(0);
+    if (char1 === '.') {
+      return URL._formatRelativePath(URL._basePath + url);
+    } else if (char1 === '~') {
+      return URL.rootPath + url.substring(1);
+    } else if (char1 === 'd') {
+      if (url.indexOf('data:image') === 0) return url;
+    } else if (char1 === '/') {
+      return url;
     }
+
+    if (this.isWeixinNativeFile(url)) {
+      return url;
+    }
+    return URL._basePath + url;
+  }
 
     /**
      * @internal

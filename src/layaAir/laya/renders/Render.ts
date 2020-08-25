@@ -72,7 +72,7 @@ export class Render {
         function getWebGLContext(canvas: any): WebGLRenderingContext {
             var gl: WebGLRenderingContext;
             var names: any[] = ["webgl2", "webgl", "experimental-webgl", "webkit-3d", "moz-webgl"];
-            if (!Config.useWebGL2 || Browser.onBDMiniGame) {//TODO:反向兼容百度
+            if (!Config.useWebGL2 || Browser.onBDMiniGame || Browser.onTTMiniGame) {//TODO:反向兼容百度
                 names.shift();
             }
             for (var i: number = 0; i < names.length; i++) {

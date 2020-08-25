@@ -1027,12 +1027,18 @@ export class Text extends Sprite {
         if (bitmapFont) return bitmapFont.getTextWidth(text);
         else {
             if (ILaya.Render.isConchApp) {
-                return (window as any).conchTextCanvas.measureText(text).width;;
+                return (window as any).conchTextCanvas.measureText(text).width;
             }
-            else{
-				let ret = ILaya.Browser.context.measureText(text)||{width:100};
-				return ret.width;
-			}
+            else {
+                const context = ILaya.Browser.context;
+                if (context && text) {
+                    const tm = context.measureText(text);
+                    if (tm) return tm.width;
+                    return 0;
+                } else {
+                    return 0;
+                }
+            };
         }
     }
 

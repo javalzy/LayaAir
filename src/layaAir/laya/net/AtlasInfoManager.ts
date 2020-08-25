@@ -9,9 +9,25 @@ export class AtlasInfoManager {
 
 	private static _fileLoadDic: any = {};
 
-	static enable(infoFile: string, callback: Handler|null = null): void {
-		ILaya.loader.load(infoFile, Handler.create(null, AtlasInfoManager._onInfoLoaded, [callback]), null, Loader.JSON);
-	}
+	static enable(infoFile: string, callback: Handler|null = null, fs?: any): void {
+    if (fs) {
+      fs.readFile({
+        filePath: infoFile,
+        encoding: 'utf8',
+        success: ({ data }): void => {
+          const config = JSON.parse(data as string);
+          AtlasInfoManager._onInfoLoaded(callback, config);
+        },
+      });
+    } else {
+      ILaya.loader.load(
+        infoFile,
+        Handler.create(null, AtlasInfoManager._onInfoLoaded, [callback]),
+        null,
+        Loader.JSON,
+      );
+    }
+  }
 
 	/**@private */
 	private static _onInfoLoaded(callback: Handler, data: any): void {

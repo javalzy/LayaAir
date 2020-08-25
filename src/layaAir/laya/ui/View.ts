@@ -35,9 +35,17 @@ import { VBox } from "./VBox";
 import { FontClip } from "./FontClip";
 import { ILaya } from "../../ILaya";
 import { ClassUtils } from "../utils/ClassUtils";
+import { Browser } from 'laya/utils/Browser';
 
 
-
+type IEventDispatcher = {
+  on: Function;
+  off: Function;
+  offAllCaller: Function;
+  event: Function;
+  once: Function;
+  offAll: Function;
+};
 /**
  * <code>View</code> 是一个视图类，2.0开始，更改继承至Scene类，相对于Scene，增加相对布局功能。
  */
@@ -55,6 +63,7 @@ export class View extends Scene {
     /**Y锚点，值为0-1，设置anchorY值最终通过pivotY值来改变节点轴心点。*/
     protected _anchorY: number = NaN;
 
+  protected eventShooters: Map<IEventDispatcher, boolean> = new Map<IEventDispatcher, boolean>();
     static __init__(): void {
         ILaya.ClassUtils.regShortClassName([ViewStack, Button, TextArea, ColorPicker, Box, ScaleBox, CheckBox, Clip, ComboBox, UIComponent,
             HScrollBar, HSlider, Image, Label, List, Panel, ProgressBar, Radio, RadioGroup, ScrollBar, Slider, Tab, TextInput, View, /*Dialog,*/
@@ -105,6 +114,8 @@ export class View extends Scene {
 		*/
 		/*override*/  destroy(destroyChild: boolean = true): void {
         this._watchMap = null;
+    this.clearEventHandlers();
+    this.timer.clearAll(this);
         super.destroy(destroyChild);
     }
 
@@ -261,6 +272,50 @@ export class View extends Scene {
             else if (name in this && !(this[name] instanceof Function)) this[name] = value[name];
         }
     }
+  protected handleEvent(
+    evt: string,
+    obj: IEventDispatcher,
+    func: Function,
+    args: any[] = null
+  ): void {
+    obj.off(evt, this, func);
+    obj.on(evt, this, func, args);
+    this.eventShooters.set(obj, true);
+  }
+
+  protected handleStrictClick(obj: IEventDispatcher, func: Function, args: any[] = null): void {
+    this.handleEvent('strick_click', obj, func, args);
+    obj.on(Event.MOUSE_DOWN, this, (e1: Event) => {
+      let startTime = Browser.now();
+      let x1 = e1.stageX;
+      let y1 = e1.stageY;
+      obj.once(Event.MOUSE_OUT, this, () => {
+        obj.offAll(Event.MOUSE_UP);
+      });
+      obj.once(Event.MOUSE_UP, this, (e3: Event) => {
+        obj.offAll(Event.MOUSE_OUT);
+        let now = Browser.now();
+        let deltaX = e3.stageX - x1;
+        let deltaY = e3.stageY - y1;
+        if (now - startTime < 150 && deltaX + deltaY <= 1) obj.event('strick_click');
+      });
+    });
+  }
+
+  protected handleClick(btn: IEventDispatcher, func: Function): void {
+    this.handleEvent(Event.CLICK, btn, func);
+  }
+
+  protected offEvent(evt: string, obj: IEventDispatcher, func: Function): void {
+    obj.off(evt, this, func);
+  }
+
+  protected clearEventHandlers(): void {
+    this.eventShooters.forEach((_, obj) => {
+      obj.offAllCaller(this);
+    });
+    this.eventShooters.clear();
+  }
 }
 
 ILaya.regClass(View);

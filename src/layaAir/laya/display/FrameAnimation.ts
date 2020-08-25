@@ -33,7 +33,8 @@ export class FrameAnimation extends AnimationBase {
 
     constructor() {
         super();
-        if (FrameAnimation._sortIndexFun === undefined) {
+        //Android帧动画卡顿问题:兴宁发现的.
+        if (!FrameAnimation._sortIndexFun) {
             FrameAnimation._sortIndexFun = MathUtil.sortByKey("index", false, true);
         }
     }

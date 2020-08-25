@@ -32,10 +32,18 @@ export class Pool {
      * @param sign 对象类型标识字符。
      * @param item 对象。
      */
-    static recover(sign: string, item: any): void {
-        if (item[Pool.POOLSIGN]) return;
-        item[Pool.POOLSIGN] = true;
-        Pool.getPoolBySign(sign).push(item);
+    static recover(sign: string, item: any, length:number = null): boolean {
+        if (item[Pool.POOLSIGN]) {
+            return true
+        };
+        let pool = Pool.getPoolBySign(sign);
+        if (!length || pool.length < length) {
+            item[Pool.POOLSIGN] = true;
+            pool.push(item);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**

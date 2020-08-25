@@ -186,8 +186,10 @@ export class Image extends UIComponent {
      */
     protected setSource(url: string, img: any = null): void {
         if (url === this._skin && img) {
-            this.source = img
-            this.onCompResize();
+            if(!this.destroyed) {
+              this.source = img
+              this.onCompResize();
+            }
         }
     }
 

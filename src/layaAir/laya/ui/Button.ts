@@ -327,6 +327,8 @@ export class Button extends UIComponent implements ISelect {
     }
 
     protected _skinLoaded(): void {
+      if(this.destroyed) return;
+
         this.callLater(this.changeClips);
         this._setStateChanged();
         this._sizeChanged();

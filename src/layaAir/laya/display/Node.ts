@@ -292,6 +292,14 @@ export class Node extends EventDispatcher {
         return this._children[index] || null;
     }
 
+		childSize():number {
+			return this._children.length;
+		}
+
+		bringToFront(node:Node):void {
+			let lastIndex = this._children.length - 1;
+			this.setChildIndex(node, lastIndex);
+		}
     /**
      * 设置子节点的索引位置。
      * @param	node 子节点。

@@ -96,6 +96,18 @@ export class DialogManager extends Sprite {
             if (item.isPopupCenter) this._centerDialog(item);
         }
     }
+    
+    setMaskAlpha(alpha: number): void {
+        if (this.maskLayer && !this.maskLayer.destroyed) {
+            this.maskLayer.alpha = alpha;
+        }
+    }
+
+    resetMaskAlpha(): void {
+        if (this.maskLayer && !this.maskLayer.destroyed) {
+            this.maskLayer.alpha = UIConfig.popupBgAlpha;
+        }
+    }
 
     private _centerDialog(dialog: Dialog): void {
         dialog.x = Math.round(((ILaya.stage.width - dialog.width) >> 1) + dialog.pivotX);
@@ -151,9 +163,9 @@ export class DialogManager extends Sprite {
      */
     close(dialog: Dialog): void {
         this._clearDialogEffect(dialog);
-        if (dialog.isShowEffect && dialog.closeEffect != null) dialog.closeEffect.runWith([dialog]);
-        else this.doClose(dialog);
-        this.event(Event.CLOSE);
+        // if (dialog.isShowEffect && dialog.closeEffect != null) dialog.closeEffect.runWith([dialog]);
+        this.doClose(dialog);
+        this.event(Event.CLOSE, dialog);
     }
 
     /**
