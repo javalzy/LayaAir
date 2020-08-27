@@ -3,7 +3,8 @@ const { execFile } = require('child_process');
 const path = require("path");
 gulp.task('tsc', (cb) => {
     let cmd = ["-b","src/samples/tsconfig.json"];
-    let cmddir = path.join(__dirname,"./node_modules/.bin/tsc.cmd");
+    // let cmddir = path.join(__dirname,"./node_modules/.bin/tsc.cmd");
+    let cmddir = path.join(__dirname,"./node_modules/.bin/tsc");
     execFile(cmddir,cmd,(err,stdout,stderr)=>{
         if(err){
             console.log(err,'\n',stdout,'\n',stderr);
